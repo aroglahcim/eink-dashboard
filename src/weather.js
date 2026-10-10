@@ -1,4 +1,4 @@
-import { wmoDescription } from './wmo.js';
+import { geocodingLanguage, getUi, wmoDescription } from './i18n.js';
 
 const GEO_URL = 'https://geocoding-api.open-meteo.com/v1/search';
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
@@ -18,7 +18,30 @@ function formatNumber(value, suffix) {
   return `${n}${suffix}`;
 }
 
+function formatPercent(value) {
+  if (value == null || Number.isNaN(Number(value))) {
+    return '—';
+  }
+  return `${Math.round(Number(value))}%`;
+}
+
+function formatRainSummary(sumMm, chancePercent) {
+  const mm = formatNumber(sumMm, ' mm');
+  const pct = formatPercent(chancePercent);
+  if (mm === '—' && pct === '—') {
+    return '—';
+  }
+  if (mm === '—') {
+    return pct;
+  }
+  if (pct === '—') {
+    return mm;
+  }
+  return `${mm} · ${pct}`;
+}
+
 export function createWeatherService(config) {
+  const ui = getUi(config.locale);
   let locationCache = null;
   let weatherCache = null;
   let weatherCacheExpiresAt = 0;
@@ -31,19 +54,19 @@ export function createWeatherService(config) {
     const params = new URLSearchParams({
       name: config.city,
       count: '10',
-      language: 'pl',
+      language: geocodingLanguage(config.locale),
       format: 'json',
     });
 
     const response = await fetch(`${GEO_URL}?${params.toString()}`);
     if (!response.ok) {
-      throw new Error(`Geokodowanie nie powiodło się (${response.status})`);
+      throw new Error(`${ui.errors.geocodingFailed} (${response.status})`);
     }
 
     const data = await response.json();
     const results = data.results ?? [];
     if (results.length === 0) {
-      throw new Error(`Nie znaleziono miasta: ${config.city}`);
+      throw new Error(`${ui.errors.cityNotFound}: ${config.city}`);
     }
 
     const country = config.country?.toUpperCase();
@@ -77,16 +100,19 @@ export function createWeatherService(config) {
         'wind_speed_10m',
         'precipitation',
       ].join(','),
-      daily: ['temperature_2m_max', 'temperature_2m_min', 'precipitation_sum'].join(
-        ',',
-      ),
+      daily: [
+        'temperature_2m_max',
+        'temperature_2m_min',
+        'precipitation_sum',
+        'precipitation_probability_max',
+      ].join(','),
       wind_speed_unit: 'kmh',
       precipitation_unit: 'mm',
     });
 
     const response = await fetch(`${FORECAST_URL}?${params.toString()}`);
     if (!response.ok) {
-      throw new Error(`Prognoza nie powiodła się (${response.status})`);
+      throw new Error(`${ui.errors.forecastFailed} (${response.status})`);
     }
 
     return response.json();
@@ -97,15 +123,14 @@ export function createWeatherService(config) {
     const daily = forecast.daily ?? {};
     const idx = 0;
 
-    const place = location.name;
-
     return {
-      place,
+      place: location.name,
       country: location.country,
+      locale: config.locale,
       updatedAt: current.time ?? new Date().toISOString(),
       current: {
         temperatureC: round1(current.temperature_2m),
-        description: wmoDescription(current.weather_code),
+        description: wmoDescription(current.weather_code, config.locale),
         weatherCode: current.weather_code ?? null,
         windKmh: round1(current.wind_speed_10m),
         precipitationMm: round1(current.precipitation),
@@ -114,13 +139,19 @@ export function createWeatherService(config) {
         minC: round1(daily.temperature_2m_min?.[idx]),
         maxC: round1(daily.temperature_2m_max?.[idx]),
         precipitationSumMm: round1(daily.precipitation_sum?.[idx]),
+        precipitationProbabilityMax:
+          daily.precipitation_probability_max?.[idx] ?? null,
         date: daily.time?.[idx] ?? null,
       },
       display: {
         temperature: formatNumber(current.temperature_2m, '°C'),
         minMax: `${formatNumber(daily.temperature_2m_min?.[idx], '°C')} / ${formatNumber(daily.temperature_2m_max?.[idx], '°C')}`,
         wind: formatNumber(current.wind_speed_10m, ' km/h'),
-        rain: formatNumber(daily.precipitation_sum?.[idx], ' mm'),
+        rain: formatRainSummary(
+          daily.precipitation_sum?.[idx],
+          daily.precipitation_probability_max?.[idx],
+        ),
+        rainChance: formatPercent(daily.precipitation_probability_max?.[idx]),
       },
     };
   }

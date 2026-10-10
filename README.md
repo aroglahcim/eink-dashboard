@@ -2,6 +2,8 @@
 
 E-ink weather dashboard for PocketBook PB634: Open-Meteo, Node.js (Fastify), Docker.
 
+**Agents:** read [AGENTS.md](AGENTS.md) and [CONTRACT.md](CONTRACT.md) before changing core behavior.
+
 ## Run with Docker
 
 ```bash
@@ -85,8 +87,12 @@ Copy `.env.example` to `.env` and adjust values. Point `docker-compose.yml` at `
 | `WEATHER_LANG` | `en` | UI language: `en` or `pl` (restart after change) |
 | `PORT` | 3000 | Port inside the container |
 | `CACHE_TTL_SECONDS` | 840 | Backend response cache (~14 min) |
+| `PAGE_REFRESH_SECONDS` | 900 | Browser reload interval (HTTP `Refresh` + meta) |
+| `UI_SHOW_NEXT_REFRESH` | `false` | Show approximate next reload in footer `(HH:MM)` |
 
-The page refreshes every **15 minutes** via HTML meta refresh (no client-side JavaScript).
+The page refreshes every **15 minutes** (`PAGE_REFRESH_SECONDS`, default 900) via the HTTP `Refresh` header and HTML meta refresh (no client-side JavaScript).
+
+Set `UI_SHOW_NEXT_REFRESH=true` to append an approximate next reload time in the footer, e.g. `Updated: 21:00 (21:15)` — the time in parentheses is `servedAt + PAGE_REFRESH_SECONDS` when the server handled `GET /`.
 
 All labels, weather descriptions, and errors are rendered on the server from `WEATHER_LANG`.
 

@@ -1,0 +1,13 @@
+---
+description: eink-dashboard agent conventions
+alwaysApply: true
+---
+
+# eink-dashboard
+
+- Read [AGENTS.md](../../AGENTS.md) and [CONTRACT.md](../../CONTRACT.md) before changing behavior, env, or UI contract.
+- Server-side HTML only — no client JS for weather/i18n; keep [public/style.css](../../public/style.css) e‑ink friendly (contrast, no scroll).
+- Locales: `WEATHER_LANG` = `en` | `pl` via [src/i18n.js](../../src/i18n.js); WMO icons in [src/weatherIcons.js](../../src/weatherIcons.js).
+- Open-Meteo only; no API keys in repo. Never commit `.env`.
+- `docker-compose.yml` is for local dev (volumes + `--watch`); production uses [Dockerfile](../../Dockerfile) CMD.
+- Do not add auth, SPA frameworks, or multi-page flows unless the user explicitly requests them.

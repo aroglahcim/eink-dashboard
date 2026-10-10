@@ -1,0 +1,118 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #fff;
+  color: #000;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+body {
+  overflow: hidden;
+}
+
+.page {
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 48px 56px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.label {
+  margin: 0 0 8px;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.place {
+  margin: 0;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.hero {
+  text-align: center;
+  padding: 12px 0 8px;
+}
+
+.temperature {
+  margin: 0;
+  font-size: 120px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.description {
+  margin: 16px 0 0;
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  border-top: 3px solid #000;
+  border-bottom: 3px solid #000;
+  padding: 28px 0;
+}
+
+.cell-label {
+  margin: 0 0 10px;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cell-value {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.footer {
+  margin-top: 8px;
+}
+
+.updated {
+  margin: 0;
+  font-size: 24px;
+}
+
+.error .temperature {
+  font-size: 48px;
+}
+
+.error .description {
+  font-size: 32px;
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 32px 28px;
+  }
+
+  .place {
+    font-size: 40px;
+  }
+
+  .temperature {
+    font-size: 96px;
+  }
+
+  .cell-value {
+    font-size: 32px;
+  }
+}

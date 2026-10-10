@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="900" />
+    <title>Pogoda</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <p class="label">Pogoda · dziś</p>
+        <h1 id="place" class="place">Ładowanie…</h1>
+      </header>
+
+      <section class="hero">
+        <p id="temperature" class="temperature">—</p>
+        <p id="description" class="description">—</p>
+      </section>
+
+      <section class="grid">
+        <div class="cell">
+          <p class="cell-label">Min / max</p>
+          <p id="minmax" class="cell-value">—</p>
+        </div>
+        <div class="cell">
+          <p class="cell-label">Wiatr</p>
+          <p id="wind" class="cell-value">—</p>
+        </div>
+        <div class="cell">
+          <p class="cell-label">Opady dziś</p>
+          <p id="rain" class="cell-value">—</p>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p id="updated" class="updated">Aktualizacja: —</p>
+      </footer>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

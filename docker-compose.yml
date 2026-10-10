@@ -8,4 +8,9 @@ services:
       - .env.example
     environment:
       HOST: 0.0.0.0
+      NODE_ENV: development
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    command: ["node", "--watch", "src/server.js"]
     restart: unless-stopped
